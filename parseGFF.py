@@ -47,22 +47,12 @@ def parse_gff():
 					linewriter = csv.writer(tabout, delimiter='\n', quotechar='"')
 					linewriter.writerow(line)
 
-
-#create a fuction to calculate gc content
-def get_gc_content(substring, sig_figs = 2):
-	length = len(substring)
-	c_count = substring.upper().count('C')
-	g_count = substring.upper().count('G')
-	gc_content = (c_count + g_count) / length
-	return round(gc_content, sig_figs)
-
-
 def parse_fasta():
 	# open the FASTA file
 	genome = SeqIO.read('watermelon.fsa', 'fasta')
 
 	# print(genome.seq)
-	print(genome)
+	return genome.seq
 
 def get_genome_feat():
 	# open the GFF file
@@ -83,20 +73,46 @@ def get_genome_feat():
 		# get fields[3] and fields[4]
 			start = (int(fields[3])-1)	
 			end = (int(fields[4])-1)
-			name =(str(fields[8])[0:11])
-	
+				
 		# extract the DNA sequence from the genome for this feature
 			output = genome[start:end]
+			return output
+	gff.close()
+
+#create a fuction to calculate gc content
+def get_gc_content(output, sig_figs = 2):
+	length = len(output)
+	c_count = output.upper().count('C')
+	g_count = output.upper().count('G')
+	gc_content = (c_count + g_count) / length
+	return round(gc_content, sig_figs)
+
+def rev_compliment():
+	 genome = SeqIO.read('watermelon.fsa', 'fasta')
+	 
+	 for line in gff:
+		# skip blank lines
+		if not line:
+			continue
+		else:
+		# remove line breaks
+			line = line.rstrip('\n')
 	
-		# print the DNA sequence for this feature
-		# calculate the GC content for this feature, and print it to the screen
-			return get_gc_content(output)
-			gff.close()
+		# sequence, source, feature, begin, end, length, strand, phase, attributes = line.split('\t')
+			fields = line.split('\t')
+			strand = fields[6]
+			
+		#get reverse compliment of - strands	
+			if strand == '-':
+				return output.reverse_complement
+
 
 def main():
 	genome = parse_fasta() 
-	g_c = get_genome_feat()
-	print_output(g_c)
+	output = get_genome_feat()
+	g_c = get_gc_content()
+	rev_compliment = rev_compliment()
+	print_output(output, g_c, rev_compliment)
 
 	# get the arguments before calling main
 	args = get_args()
