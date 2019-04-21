@@ -6,6 +6,7 @@
 #set up arg parse
 import argparse
 import csv
+from Bio import SeqIO
 
 
 # open the output file
@@ -59,31 +60,9 @@ fasta_file = 'watermelon.fsa'
 
 
 # open the FASTA file
-fasta = open(fasta_file, 'r')
+genome = SeqIO.read('watermelon.fsa', 'fasta')
 
-#create a line counter
-line_counter = 1
-for line in fasta_file:
-	if line_counter == 2:
-		sequence = line.rstrip('\n')
-	line_counter += 1
-
-# open the FASTA file
-fasta_contents = fasta.read()
-# skip first line in fasta file
-header   = fasta_contents.split('\n')[0]
-sequence = fasta_contents.split('\n')[1]
-fasta.close()
-
-
-#create the genome in a list form
-file_in_list = []
-with open(fasta_file) as fasta:
-	file_in_list = fasta.read().splitlines()
-	file_in_list = fasta.splitlines()
-
-genome = file_in_list[1]
-
+# print(genome.seq)
 print(genome)
 
 # open the GFF file
